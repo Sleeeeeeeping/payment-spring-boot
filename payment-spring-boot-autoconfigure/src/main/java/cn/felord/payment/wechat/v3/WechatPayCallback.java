@@ -83,7 +83,7 @@ public class WechatPayCallback {
     }
 
     /**
-     * Instantiates a new Wechat pay callback.
+     * Instantiates a new WeChat pay callback.
      *
      * @param signatureProvider the signature provider
      * @param tenantId          the tenant id
@@ -177,15 +177,15 @@ public class WechatPayCallback {
      * @since 1.0.2.RELEASE
      */
     @SneakyThrows
-    public Map<String, String> payscoreUserOrderCallback(ResponseSignVerifyParams params, PayScoreConsumer payScoreConsumer) {
+    public Map<String, String> payScoreUserOrderCallback(ResponseSignVerifyParams params, PayScoreConsumer payScoreConsumer) {
         CallbackParams callbackParams = resolve(params);
         String eventType = callbackParams.getEventType();
 
-        if (Objects.equals(eventType, EventType.PAYSCORE_USER_CONFIRM.event)) {
+        if (Objects.equals(eventType, EventType.PAY_SCORE_USER_CONFIRM.event)) {
             String data = this.decrypt(callbackParams);
             PayScoreUserConfirmConsumeData confirmConsumeData = MAPPER.readValue(data, PayScoreUserConfirmConsumeData.class);
             payScoreConsumer.getConfirmConsumeDataConsumer().accept(confirmConsumeData);
-        } else if (Objects.equals(eventType, EventType.PAYSCORE_USER_PAID.event)) {
+        } else if (Objects.equals(eventType, EventType.PAY_SCORE_USER_PAID.event)) {
             String data = this.decrypt(callbackParams);
             PayScoreUserPaidConsumeData paidConsumeData = MAPPER.readValue(data, PayScoreUserPaidConsumeData.class);
             payScoreConsumer.getPaidConsumeDataConsumer().accept(paidConsumeData);
@@ -210,10 +210,10 @@ public class WechatPayCallback {
      * @since 1.0.13.RELEASE
      */
     @SneakyThrows
-    public Map<String, String> payscoreParkingCallback(ResponseSignVerifyParams params, Consumer<ParkingCallback> parkingCallbackConsumer) {
+    public Map<String, String> payScoreParkingCallback(ResponseSignVerifyParams params, Consumer<ParkingCallback> parkingCallbackConsumer) {
         CallbackParams callbackParams = resolve(params);
         String eventType = callbackParams.getEventType();
-        if (Objects.equals(eventType, EventType.PAYSCORE_PARKING_ENTRANCE_STATE_CHANGE.event)) {
+        if (Objects.equals(eventType, EventType.PAY_SCORE_PARKING_ENTRANCE_STATE_CHANGE.event)) {
             String data = this.decrypt(callbackParams);
             ParkingCallback parkingCallback = MAPPER.readValue(data, ParkingCallback.class);
             parkingCallbackConsumer.accept(parkingCallback);
@@ -247,7 +247,7 @@ public class WechatPayCallback {
      * @since 1.0.13.RELEASE
      */
     @SneakyThrows
-    public Map<String, String> payscoreTransParkingCallback(ResponseSignVerifyParams params, Consumer<TransParkingCallback> transParkingCallbackConsumer) {
+    public Map<String, String> payScoreTransParkingCallback(ResponseSignVerifyParams params, Consumer<TransParkingCallback> transParkingCallbackConsumer) {
         CallbackParams callbackParams = resolve(params);
         String eventType = callbackParams.getEventType();
         if (Objects.equals(eventType, EventType.TRANSACTION_SUCCESS.event) ||
@@ -280,9 +280,9 @@ public class WechatPayCallback {
         CallbackParams callbackParams = resolve(params);
         String eventType = callbackParams.getEventType();
         boolean closed;
-        if (Objects.equals(eventType, EventType.PAYSCORE_USER_OPEN.event)) {
+        if (Objects.equals(eventType, EventType.PAY_SCORE_USER_OPEN.event)) {
             closed = false;
-        } else if (Objects.equals(eventType, EventType.PAYSCORE_USER_CLOSE.event)) {
+        } else if (Objects.equals(eventType, EventType.PAY_SCORE_USER_CLOSE.event)) {
             closed = true;
         } else {
             log.error("wechat pay event type is not matched, callbackParams {}", callbackParams);
@@ -340,10 +340,10 @@ public class WechatPayCallback {
      *
      * @param params              the params
      * @param consumeDataConsumer the consume data consumer
-     * @return the map
+     * @return the map 业务
      */
     @SneakyThrows
-    public Map<String, String> busiFavorReceiveCallback(ResponseSignVerifyParams params, Consumer<BusiFavorReceiveConsumeData> consumeDataConsumer) {
+    public Map<String, String> businessFavorReceiveCallback(ResponseSignVerifyParams params, Consumer<BusiFavorReceiveConsumeData> consumeDataConsumer) {
         CallbackParams callbackParams = resolve(params);
         String eventType = callbackParams.getEventType();
 
@@ -417,14 +417,14 @@ public class WechatPayCallback {
      * 直连商户-微信支付分账V3动账通知
      *
      * @param params                           the params
-     * @param profitsharingConsumeDataConsumer the profitsharing consume data consumer
+     * @param proFitSharingConsumeDataConsumer the proFitSharing consume data consumer
      * @return map map
      */
     @SneakyThrows
-    public Map<String, String> profitsharingCallback(ResponseSignVerifyParams params, Consumer<ProfitsharingConsumeData> profitsharingConsumeDataConsumer) {
+    public Map<String, String> proFitSharingCallback(ResponseSignVerifyParams params, Consumer<ProfitsharingConsumeData> proFitSharingConsumeDataConsumer) {
         String callback = this.callback(params, EventType.TRANSACTION_SUCCESS);
         ProfitsharingConsumeData consumeData = MAPPER.readValue(callback, ProfitsharingConsumeData.class);
-        profitsharingConsumeDataConsumer.accept(consumeData);
+        proFitSharingConsumeDataConsumer.accept(consumeData);
         return response();
     }
 
@@ -432,15 +432,15 @@ public class WechatPayCallback {
      * 服务商-微信支付分账V3动账通知（电商收付通复用）
      *
      * @param params                           the params
-     * @param profitsharingConsumeDataConsumer the profitsharing consume data consumer
+     * @param proFitSharingConsumeDataConsumer the proFitSharing consume data consumer
      * @return map map
      * @since 1.0.14.RELEASE
      */
     @SneakyThrows
-    public Map<String, String> partnerProfitsharingCallback(ResponseSignVerifyParams params, Consumer<PartnerProfitsharingConsumeData> profitsharingConsumeDataConsumer) {
+    public Map<String, String> partnerProFitSharingCallback(ResponseSignVerifyParams params, Consumer<PartnerProfitsharingConsumeData> proFitSharingConsumeDataConsumer) {
         String callback = this.callback(params, EventType.TRANSACTION_SUCCESS);
         PartnerProfitsharingConsumeData consumeData = MAPPER.readValue(callback, PartnerProfitsharingConsumeData.class);
-        profitsharingConsumeDataConsumer.accept(consumeData);
+        proFitSharingConsumeDataConsumer.accept(consumeData);
         return response();
     }
 
@@ -553,34 +553,34 @@ public class WechatPayCallback {
          *
          * @since 1.0.2.RELEASE
          */
-        PAYSCORE_USER_CONFIRM("PAYSCORE.USER_CONFIRM"),
+        PAY_SCORE_USER_CONFIRM("PAY_SCORE.USER_CONFIRM"),
 
         /**
          * 微信支付分用户支付成功订单事件.
          *
          * @since 1.0.2.RELEASE
          */
-        PAYSCORE_USER_PAID("PAYSCORE.USER_PAID"),
+        PAY_SCORE_USER_PAID("PAY_SCORE.USER_PAID"),
 
         /**
          * 微信支付分授权事件.
          *
          * @since 1.0.2.RELEASE
          */
-        PAYSCORE_USER_OPEN("PAYSCORE.USER_OPEN_SERVICE"),
+        PAY_SCORE_USER_OPEN("PAY_SCORE.USER_OPEN_SERVICE"),
 
         /**
          * 微信支付分解除授权事件.
          *
          * @since 1.0.2.RELEASE
          */
-        PAYSCORE_USER_CLOSE("PAYSCORE.USER_CLOSE_SERVICE"),
+        PAY_SCORE_USER_CLOSE("PAY_SCORE.USER_CLOSE_SERVICE"),
         /**
          * 停车入场状态变更通知事件.
          *
          * @since 1.0.13.RELEASE
          */
-        PAYSCORE_PARKING_ENTRANCE_STATE_CHANGE("VEHICLE.ENTRANCE_STATE_CHANGE"),
+        PAY_SCORE_PARKING_ENTRANCE_STATE_CHANGE("VEHICLE.ENTRANCE_STATE_CHANGE"),
 
         /**
          * 用户领取微信先享卡事件.
